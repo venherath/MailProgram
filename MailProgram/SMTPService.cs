@@ -1,13 +1,11 @@
 ﻿using MailKit.Net.Smtp;
 using MimeKit;
-using Org.BouncyCastle.Asn1.Ocsp;
 using System.Diagnostics;
 using System.Security.Principal;
 
 namespace MailProgram
 {
-    //Program flow: Constructor → SendMailAsync (main) → Helper methods (AddSignatureToMessage) (GetMailServerProxy)
-    //→ Send → Cleanup
+    //Program flow: Constructor → SendMailAsync (main) → Helper method (AddSignatureToMessage) (GetMailServerProxy) → Send → Cleanup
     public class SMTPService
     {
         public LogService LogService { get; private set; }
@@ -38,7 +36,6 @@ namespace MailProgram
             /* Parameters: from: Sender's email address, to/cc/bcc: Recipient lists, subject/body: Email content, filenames: Attachments
 
             mailSignature: signature template, deletefilenames: delete file names if requested*/
-
             // Debug -- Ensure at least one recipient exists when debugger is attached
             if (Debugger.IsAttached && (to == null || to.Count == 0))
                 to = new List<string> { "default@example.com" };
@@ -67,8 +64,15 @@ namespace MailProgram
 
             message.Subject = subject;
 
+            body = body.Replace("{email}", "recipient@example.com") //******hardcoded for testing. use actual values from parameters.
+                      .Replace("{resetLink}", "https://example.com/reset")
+                      .Replace("{expirationInMinutes}", "60");
+                      
             var builder = new BodyBuilder();
             builder.HtmlBody = body;  // HTML email body
+
+            // Replace main email placeholders
+           
 
             // Process file attachments
             if (filenames != null)
@@ -90,7 +94,7 @@ namespace MailProgram
             {
                 LogService.Info($"Email Sent Start: {message.Subject}");
                 await MailServer.SendAsync(message);  // Send email using MailKit
-                await MailServer.DisconnectAsync(true);  // Disconnect after sending
+                await MailServer.DisconnectAsync(true);  // New - Disconnect after sending
             }
             catch (Exception ex)
             {
@@ -106,35 +110,31 @@ namespace MailProgram
             }
         }
 
+       
+
         private void AddSignatureToMessage(BodyBuilder builder, MailSignature signature)
         {
-            // Inserts branded signature with logo and contact info
-            if (File.Exists(signature.SignatureLogoFilePath))
+            var signatureHTML = signature.SignatureHTML;
+            signatureHTML = signatureHTML.Replace("{SENDER_NAME}", signature.SenderName);
+            signatureHTML = signatureHTML.Replace("{SENDER_JOBTITLE}", signature.SenderJobTitle);
+            
+            signatureHTML = signatureHTML.Replace("{SENDER_DEPAREMENT}", signature.SenderDepartment);
+
+            if (!string.IsNullOrEmpty(signature.SignatureLogoFilePath) && File.Exists(signature.SignatureLogoFilePath))
             {
-                //var image = builder.LinkedResources.Add(signature.SignatureLogoFilePath);
-                //image.ContentId = Path.GetFileName(signature.SignatureLogoFilePath).Replace(".", "");
-
-                var signatureHTML = signature.SignatureHTML;
-                signatureHTML = signatureHTML.Replace("{SENDER_NAME}", signature.SenderName);
-                signatureHTML = signatureHTML.Replace("{SENDER_JOBTITLE}", signature.SenderJobTitle);
-                signatureHTML = signatureHTML.Replace("{SENDER_DEPT}", signature.SenderDepartment);
-                //signatureHTML = signatureHTML.Replace("{MAIL_LOGO}", "cid:" + image.ContentId);  // CID reference for inline image
-                signatureHTML = signatureHTML.Replace("{SENDER_DEPAREMENT}", signature.SenderDepartment);
-
-                if (!string.IsNullOrEmpty(signature.SignatureLogoFilePath) && File.Exists(signature.SignatureLogoFilePath))
-                {
-                    var image = builder.LinkedResources.Add(signature.SignatureLogoFilePath);
-                    image.ContentId = Path.GetFileName(signature.SignatureLogoFilePath).Replace(".", "");
-                    signatureHTML = signatureHTML.Replace("{MAIL_LOGO}", "cid:" + image.ContentId);
-                }
-                else
-                {
-                    // Remove the image placeholder if no logo file
-                    signatureHTML = signatureHTML.Replace("{MAIL_LOGO}", "");
-                }
-                builder.HtmlBody += signatureHTML;  // Append signature to email body
+                var image = builder.LinkedResources.Add(signature.SignatureLogoFilePath);
+                image.ContentId = Path.GetFileName(signature.SignatureLogoFilePath).Replace(".", "");
+                signatureHTML = signatureHTML.Replace("{MAIL_LOGO}", "cid:" + image.ContentId);
             }
+            else
+            {
+                signatureHTML = signatureHTML.Replace("{MAIL_LOGO}", "");
+            }
+
+            
+            builder.HtmlBody = builder.HtmlBody.Replace("{SIGNATURE}", signatureHTML);
         }
+
 
         private SmtpClient GetMailServerProxy()
         {
