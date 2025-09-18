@@ -29,81 +29,81 @@ namespace MailProgram
         public string SignatureLogoFilePath { get; set; }
     }
 
-    public class LogService
-    {
-        public bool IsEnabled { get; set; }
-        public string ApplicationProductName { get; set; }
-        public string MachineName { get; set; }
-        public string UserId { get; set; }
-        public DateTime Date { get; set; }
+    //public class LogService
+    //{
+    //    public bool IsEnabled { get; set; }
+    //    public string ApplicationProductName { get; set; }
+    //    public string MachineName { get; set; }
+    //    public string UserId { get; set; }
+    //    public DateTime Date { get; set; }
 
-        public LogService()
-        {
-            Date = DateTime.Now;
-            MachineName = Environment.MachineName;
-        }
+    //    public LogService()
+    //    {
+    //        Date = DateTime.Now;
+    //        MachineName = Environment.MachineName;
+    //    }
 
-        public void Dump(object collection, string name)
-        {
-            var lw = new LogWritter { ApplicationName = ApplicationProductName };
-            lw.Dump(collection, name);
-        }
+    //    public void Dump(object collection, string name)
+    //    {
+    //        var lw = new LogWritter { ApplicationName = ApplicationProductName };
+    //        lw.Dump(collection, name);
+    //    }
 
-        public void Debug(string message)
-        {
-            if (!IsEnabled) return;
-            var lw = new LogWritter { ApplicationName = ApplicationProductName };
-            lw.Log(new LogMessage(message, LogLevelEnum.Debug, UserId));
-        }
+    //    public void Debug(string message)
+    //    {
+    //        if (!IsEnabled) return;
+    //        var lw = new LogWritter { ApplicationName = ApplicationProductName };
+    //        lw.Log(new LogMessage(message, LogLevelEnum.Debug, UserId));
+    //    }
 
-        public void Info(string message)
-        {
-            if (!IsEnabled) return;
-            var lw = new LogWritter { ApplicationName = ApplicationProductName };
-            lw.Log(new LogMessage(message, LogLevelEnum.Info, UserId));
-        }
+    //    public void Info(string message)
+    //    {
+    //        if (!IsEnabled) return;
+    //        var lw = new LogWritter { ApplicationName = ApplicationProductName };
+    //        lw.Log(new LogMessage(message, LogLevelEnum.Info, UserId));
+    //    }
 
-        public void Error(string message)
-        {
-            if (!IsEnabled) return;
-            var lw = new LogWritter { ApplicationName = ApplicationProductName };
-            lw.Log(new LogMessage(message, LogLevelEnum.Error, UserId));
-        }
+    //    public void Error(string message)
+    //    {
+    //        if (!IsEnabled) return;
+    //        var lw = new LogWritter { ApplicationName = ApplicationProductName };
+    //        lw.Log(new LogMessage(message, LogLevelEnum.Error, UserId));
+    //    }
 
-        public void Warning(string message)
-        {
-            if (!IsEnabled) return;
-            var lw = new LogWritter { ApplicationName = ApplicationProductName };
-            lw.Log(new LogMessage(message, LogLevelEnum.Warning, UserId));
-        }
+    //    public void Warning(string message)
+    //    {
+    //        if (!IsEnabled) return;
+    //        var lw = new LogWritter { ApplicationName = ApplicationProductName };
+    //        lw.Log(new LogMessage(message, LogLevelEnum.Warning, UserId));
+    //    }
 
-        public void Fatal(string message)
-        {
-            if (!IsEnabled) return;
-            var lw = new LogWritter { ApplicationName = ApplicationProductName };
-            lw.Log(new LogMessage(message, LogLevelEnum.Fatal, UserId));
-        }
-    }
+    //    public void Fatal(string message)
+    //    {
+    //        if (!IsEnabled) return;
+    //        var lw = new LogWritter { ApplicationName = ApplicationProductName };
+    //        lw.Log(new LogMessage(message, LogLevelEnum.Fatal, UserId));
+    //    }
+    //}
 
-    public enum LogLevelEnum
-    {
-        Debug,
-        Info,
-        Warning,
-        Error,
-        Fatal
-    }
+    //public enum LogLevelEnum
+    //{
+    //    Debug,
+    //    Info,
+    //    Warning,
+    //    Error,
+    //    Fatal
+    //}
 
-    // These would be in separate files in practice, but included here for completeness
-    public class LogWritter
-    {
-        public string ApplicationName { get; set; }
-        public void Dump(object collection, string name) { }
-        public void Log(LogMessage message) { }
-    }
+    //// These would be in separate files in practice, but included here for completeness
+    //public class LogWritter
+    //{
+    //    public string ApplicationName { get; set; }
+    //    public void Dump(object collection, string name) { }
+    //    public void Log(LogMessage message) { }
+    //}
 
-    public class LogMessage
-    {
-        public LogMessage(string message, LogLevelEnum level, string userId) { }
-    }
+    //public class LogMessage
+    //{
+    //    public LogMessage(string message, LogLevelEnum level, string userId) { }
+    //}
 }
