@@ -21,7 +21,7 @@ namespace MailProgram
             SMTPSettings = smtpSettings;
             SenderDisplayName = senderDisplayName;
 
-            // Initialize our logging service to keep track of what's happening
+            // Initialize logging service to keep track of what's happening
             LogService = new LoggerService()
             {
                 EnableLog = true
