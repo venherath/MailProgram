@@ -11,7 +11,7 @@
                 SmtpServerEnableTSL = false,
                 SmtpUser = "",
                 SmtpPassword = "",
-                DebugBcc = "lfranco@fimarge.com"  // Monitoring copy. production only 
+                DebugBcc = "lfranco@fimarge.com"  // Monitoring copy. Production
             };
 
             var smtpService = new SMTPService(smtpSettings);
